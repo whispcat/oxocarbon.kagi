@@ -469,8 +469,8 @@ html:root ._0_qa_reply_box sup > a {
   font-family: var(--oxo-mono);
   font-size: 10.5px;
   padding: 0 4px;
-  color: var(--oxo-accent);
-  background: color-mix(in srgb, var(--oxo-accent) 14%, transparent);
+  color: color-mix(in srgb, var(--oxo-accent) 65%, var(--oxo-gray-40));
+  background: color-mix(in srgb, var(--oxo-accent) 9%, transparent);
   border-radius: 0;
 }
 
