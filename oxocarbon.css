@@ -465,7 +465,7 @@ html:root ._0_qa_reply_box :is(b, strong) {
   font-weight: 600;
 }
 
-html:root ._0_qa_reply_box sup.trigger > a {
+html:root ._0_qa_reply_box sup > a {
   font-family: var(--oxo-mono);
   font-size: 10.5px;
   padding: 0 4px;
@@ -474,7 +474,7 @@ html:root ._0_qa_reply_box sup.trigger > a {
   border-radius: 0;
 }
 
-html:root ._0_qa_reply_box sup.trigger > a:hover {
+html:root ._0_qa_reply_box sup > a:hover {
   color: var(--oxo-bg);
   background: var(--oxo-accent);
 }
