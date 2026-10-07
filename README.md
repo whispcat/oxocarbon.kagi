@@ -2,6 +2,8 @@
 
 A dark [oxocarbon](https://github.com/nyoom-engineering/oxocarbon) theme for Kagi Search, set in IBM Plex with square, Carbon-style corners.
 
+![Kagi search results for "what was the meiji restoration?" in the oxocarbon theme, with a Quick Answer and a Wikipedia panel](screenshot.png)
+
 ## Install
 
 Open Kagi's [Appearance settings](https://kagi.com/settings/appearance), click Change under Custom CSS, paste in `oxocarbon.css` and save. Make sure the `Enable Custom CSS` toggle is on.
