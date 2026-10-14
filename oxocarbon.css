@@ -31,8 +31,19 @@ html:root {
   --oxo-accent: var(--oxo-pink);
   --oxo-accent-soft: #ffafd2;
 
-  --oxo-sans: "IBM Plex Sans", system-ui, sans-serif;
-  --oxo-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --oxo-text: color-mix(in srgb, var(--oxo-gray-30), var(--oxo-fg-dim));
+
+  /* Kagi tags every page lang="en", so the browser can't tell Chinese from
+     Japanese. Results are routed to a regional stack by domain (see "CJK
+     routing"); everything else gets the mixed stack, where Hiragino Sans GB
+     fills the simplified hanzi Hiragino Sans lacks so both stay one design.
+     Japanese forms win for shared kanji; put the GB/YaHei entries first to
+     favour Chinese. */
+  --oxo-cjk-ja: "Hiragino Sans", "Yu Gothic UI", "Noto Sans CJK JP", "Noto Sans JP";
+  --oxo-cjk-sc: "PingFang SC", "Microsoft YaHei UI", "Noto Sans CJK SC", "Noto Sans SC";
+  --oxo-cjk-tc: "PingFang TC", "Microsoft JhengHei UI", "Noto Sans CJK TC", "Noto Sans TC";
+  --oxo-cjk: "Hiragino Sans", "Hiragino Sans GB", "Yu Gothic UI", "Microsoft YaHei UI",
+    "Noto Sans CJK JP", "Noto Sans JP";
 
   /* Carbon "productive" motion */
   --oxo-ease: cubic-bezier(0.2, 0, 0.38, 0.9);
@@ -78,10 +89,6 @@ html:root {
   --red-300: var(--oxo-red);
   --red-600: #da1e28;
   --red-800: #a2191f;
-
-  --font-main: var(--oxo-sans);
-  --font-lufga: var(--oxo-sans);
-  --font-mono: var(--oxo-mono);
 
   /* ── Kagi semantic tokens ── */
   color-scheme: dark;
@@ -154,7 +161,7 @@ html:root {
 
   --search-result-title: var(--oxo-fg);
   --search-result-title-hover: var(--oxo-accent);
-  --search-result-content-text: var(--oxo-gray-30);
+  --search-result-content-text: var(--oxo-text);
   --search-result-url-link: var(--oxo-gray-40);
   --result-item-title-border: transparent;
   --result-item-title-border_hover: var(--oxo-accent);
@@ -261,12 +268,53 @@ html:root .codehilite {
 }
 
 /* ── Base ── */
-html:root body {
+
+/* Fonts are declared here rather than on :root so a result that swaps
+   --oxo-cjk re-resolves the whole chain, Kagi's own --font-* included */
+html:root :is(body, ._0_SRI) {
+  --oxo-sans: "IBM Plex Sans", var(--oxo-cjk), system-ui, sans-serif;
+  --oxo-mono: "IBM Plex Mono", var(--oxo-cjk), ui-monospace, monospace;
+  --font-main: var(--oxo-sans);
+  --font-lufga: var(--oxo-sans);
+  --font-mono: var(--oxo-mono);
   font-family: var(--oxo-sans);
+}
+
+/* CJK routing: pick regional glyphs from the result's domain or URL path.
+   Chinese rules come after Japanese so a /zh-hant/ page on a .jp site
+   still gets Chinese glyphs. */
+html:root ._0_SRI:has(.__sri_title_link:is(
+  [data-domain^="ja."], [data-domain$=".jp"], [href*="/ja/" i], [href*="/ja-jp/" i]
+)) {
+  --oxo-cjk: var(--oxo-cjk-ja);
+}
+
+html:root ._0_SRI:has(.__sri_title_link:is(
+  [data-domain$=".cn"], [data-domain$="baidu.com"], [data-domain$="zhihu.com"],
+  [data-domain$="bilibili.com"], [data-domain$="douban.com"],
+  [href*="/zh-hans/" i], [href*="/zh-cn/" i], [href*="/zh-sg/" i]
+)) {
+  --oxo-cjk: var(--oxo-cjk-sc);
+}
+
+html:root ._0_SRI:has(.__sri_title_link:is(
+  [data-domain$=".tw"], [data-domain$=".hk"], [data-domain$=".mo"],
+  [data-domain^="zh-yue."], [data-domain^="zh-classical."],
+  [href*="/zh-hant/" i], [href*="/zh-tw/" i], [href*="/zh-hk/" i]
+)) {
+  --oxo-cjk: var(--oxo-cjk-tc);
+}
+
+html:root body {
   background: var(--oxo-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* CJK only: a hair of space between hanzi/kana and Latin or digits, titles
+     opening with 「 or 【 sit flush, and no small kana or ー at line starts */
+  text-autospace: normal;
+  text-spacing-trim: trim-start;
+  line-break: strict;
 }
 
 ::selection {
@@ -443,7 +491,7 @@ html:root .qa-content > h3 {
 html:root ._0_qa_reply_box {
   font-size: 14px;
   line-height: 1.65;
-  color: var(--oxo-gray-30);
+  color: var(--oxo-text);
   text-wrap: pretty;
 }
 
@@ -491,6 +539,10 @@ html:root .wikipediaFullPageLink {
   letter-spacing: -0.015em;
 }
 
+html:root .wikipediaFullPageLink a {
+  border-bottom: 0;
+}
+
 html:root .wiki-sub-title {
   font-size: 13px;
   color: var(--oxo-gray-40);
@@ -499,12 +551,14 @@ html:root .wiki-sub-title {
 html:root .wiki-desc-box {
   font-size: 14px;
   line-height: 1.65;
-  color: var(--oxo-gray-30);
+  color: var(--oxo-text);
   text-wrap: pretty;
 }
 
+/* Kagi underlines with border-bottom, which doubles up with text-decoration on hover */
 html:root .wiki-desc-box a {
   color: inherit;
+  border-bottom: 0;
   text-decoration: underline;
   text-decoration-color: var(--oxo-border);
   text-underline-offset: 3px;
@@ -546,7 +600,7 @@ html:root .__result-date {
 html:root .newsResultContent {
   font-size: 14px;
   line-height: 1.6;
-  color: var(--oxo-gray-30);
+  color: var(--oxo-text);
   text-wrap: pretty;
 }
 
@@ -578,8 +632,27 @@ html:root :focus:not(:focus-visible) {
   outline: none;
 }
 
-html:root .__sri-title-box > a:visited {
+html:root .__sri-title-box > a:visited:not(:hover) {
   color: var(--oxo-purple);
+}
+
+/* Kagi declares :visited after :hover on these, so visited links never turn pink */
+html:root :is(.wikipediaResult a, .newsResultTitle a._0_TITLE, .widgetItemTitle):visited:hover {
+  color: var(--oxo-accent);
+}
+
+html:root .wikipediaResult a:visited:hover {
+  border-bottom-color: var(--oxo-accent);
+}
+
+/* Firefox animates a visited link's unvisited colour (white) on hover and
+   only shows pink once the transition ends, and :visited can't switch
+   transitions off, so these links change colour instantly everywhere */
+html:root :is(
+  .__sri-title-box > a, .__srgi-title a, .wikipediaResult a:not(.wiki-desc-box a),
+  .newsResultTitle a._0_TITLE, .widgetItemTitle
+) {
+  transition: none;
 }
 
 /* Tabs: 2px Carbon underline; hover previews it in gray */
@@ -592,7 +665,17 @@ html:root .nav_item:not(.--active):hover::after {
 }
 
 /* Filters, menus and dropdowns */
-html:root .dd-toggle-label:hover {
+html:root :is(.filter-lens-item.dropdown, .quick-answer-trigger-link) {
+  border-color: transparent;
+}
+
+/* The bolt glyph has ~4px of empty viewBox on its left */
+html:root .quick-answer-trigger-link {
+  padding-left: 4px;
+  color: var(--oxo-gray-30);
+}
+
+html:root :is(.dd-toggle-label, .quick-answer-trigger-link):hover {
   color: var(--oxo-fg);
   background: var(--hover-bg);
 }
