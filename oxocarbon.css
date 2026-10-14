@@ -2,6 +2,15 @@
 
 /* Oxocarbon dark for Kagi — paste into Settings → Appearance → Custom CSS */
 
+/* Hiragino runs a step lighter than PingFang at every CSS weight (title 500
+   is W4 against PingFang Medium), so map each weight one face up to keep
+   Japanese and Chinese results the same colour. */
+@font-face { font-family: "Oxo Hiragino"; font-weight: 300; src: local("HiraginoSans-W3"); }
+@font-face { font-family: "Oxo Hiragino"; font-weight: 400; src: local("HiraginoSans-W4"); }
+@font-face { font-family: "Oxo Hiragino"; font-weight: 500; src: local("HiraginoSans-W5"); }
+@font-face { font-family: "Oxo Hiragino"; font-weight: 600; src: local("HiraginoSans-W6"); }
+@font-face { font-family: "Oxo Hiragino"; font-weight: 700; src: local("HiraginoSans-W7"); }
+
 /* html:root (0,1,1) outranks Kagi's theme classes on <html> (0,1,0),
    so oxocarbon wins whichever light/dark theme Kagi has active. */
 html:root {
@@ -35,14 +44,15 @@ html:root {
 
   /* Kagi tags every page lang="en", so the browser can't tell Chinese from
      Japanese. Results are routed to a regional stack by domain (see "CJK
-     routing"); everything else gets the mixed stack, where Hiragino Sans GB
-     fills the simplified hanzi Hiragino Sans lacks so both stay one design.
-     Japanese forms win for shared kanji; put the GB/YaHei entries first to
-     favour Chinese. */
-  --oxo-cjk-ja: "Hiragino Sans", "Yu Gothic UI", "Noto Sans CJK JP", "Noto Sans JP";
+     routing"); everything else gets the mixed stack, where PingFang SC fills
+     the simplified hanzi Hiragino Sans lacks (进, 维…) at a matching weight.
+     Hiragino Sans GB would keep one design but only ships W3 and W6.
+     Japanese forms win for shared kanji; put the PingFang/YaHei entries
+     first to favour Chinese. */
+  --oxo-cjk-ja: "Oxo Hiragino", "Yu Gothic UI", "Noto Sans CJK JP", "Noto Sans JP";
   --oxo-cjk-sc: "PingFang SC", "Microsoft YaHei UI", "Noto Sans CJK SC", "Noto Sans SC";
   --oxo-cjk-tc: "PingFang TC", "Microsoft JhengHei UI", "Noto Sans CJK TC", "Noto Sans TC";
-  --oxo-cjk: "Hiragino Sans", "Hiragino Sans GB", "Yu Gothic UI", "Microsoft YaHei UI",
+  --oxo-cjk: "Oxo Hiragino", "PingFang SC", "Yu Gothic UI", "Microsoft YaHei UI",
     "Noto Sans CJK JP", "Noto Sans JP";
 
   /* Carbon "productive" motion */
@@ -290,8 +300,9 @@ html:root ._0_SRI:has(.__sri_title_link:is(
 }
 
 html:root ._0_SRI:has(.__sri_title_link:is(
-  [data-domain$=".cn"], [data-domain$="baidu.com"], [data-domain$="zhihu.com"],
+  [data-domain^="zh."], [data-domain$=".cn"], [data-domain$="baidu.com"], [data-domain$="zhihu.com"],
   [data-domain$="bilibili.com"], [data-domain$="douban.com"],
+  [href*="/zh/" i], [href*="/cn/" i],
   [href*="/zh-hans/" i], [href*="/zh-cn/" i], [href*="/zh-sg/" i]
 )) {
   --oxo-cjk: var(--oxo-cjk-sc);
@@ -300,6 +311,7 @@ html:root ._0_SRI:has(.__sri_title_link:is(
 html:root ._0_SRI:has(.__sri_title_link:is(
   [data-domain$=".tw"], [data-domain$=".hk"], [data-domain$=".mo"],
   [data-domain^="zh-yue."], [data-domain^="zh-classical."],
+  [href*="/tw/" i], [href*="/hk/" i],
   [href*="/zh-hant/" i], [href*="/zh-tw/" i], [href*="/zh-hk/" i]
 )) {
   --oxo-cjk: var(--oxo-cjk-tc);
