@@ -677,7 +677,7 @@ html:root .nav_item:not(.--active):hover::after {
 }
 
 /* Filters, menus and dropdowns */
-html:root :is(.filter-lens-item.dropdown, .quick-answer-trigger-link) {
+html:root :is(.filter-lens-item.dropdown:not(:has(> ._0_selected)), .quick-answer-trigger-link) {
   border-color: transparent;
 }
 
